@@ -1,89 +1,120 @@
-import tkinter as tk
-import tkinter.messagebox
+import customtkinter
+
+customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("blue")
+
+app = customtkinter.CTk()
+app.geometry("450x600")
+app.title("IA C1 A 1 Genetic Algorithms 01")
+app.resizable(False, True)
 
 
-screenRoot = tk.Tk()
-screenRoot.title("AI.C1.A1 Genetic Algorithms")
-screenRoot.geometry("400x600")
+def start():
+    print("saving data...")
 
-def guardar_datos():
-    campos = [
-        formula.get(),
-        i_poblation.get(),
-        max_poblation.get(),
-        ind_mut_prob.get(),
-        ind_gen_mut_prob.get(),
-        min_range.get(),
-        max_range.get(),
-        iteraciones.get(),
-        fitness.get(),
-    ]
+masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
 
-    if any(campo == "" for campo in campos):
-        tk.messagebox.showwarning("Error", "Por favor, complete todos los campos.")
-        return
+frame = customtkinter.CTkFrame(master=masterFrame1, width=430, height=20,fg_color="transparent")
+customtkinter.CTkLabel(master=frame, text="Formula", width=430,).pack(fill="x", expand=True)
+frame.pack(side="top", fill="x", expand=True)
 
-    # Guarda los datos en un archivo o base de datos
-    with open("datos.txt", "w") as f:
-        f.writelines(campo + "\n" for campo in campos)
+frame1 = customtkinter.CTkFrame(master=masterFrame1, width=300, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame1, text="f(x)", width=100).pack(side="left")
+formula_text = customtkinter.CTkEntry(master=frame1, width=200)
+formula_text.pack()
+frame1.pack(padx=10, pady=5,side="left")
 
-    tk.messagebox.showinfo("Éxito", "Datos guardados correctamente.")
+frame2 = customtkinter.CTkFrame(master=masterFrame1, width=130, height=70, fg_color="transparent")
+minBttn = customtkinter.CTkButton(master=frame2, text="minimo").pack(pady=5)
+maxBttn = customtkinter.CTkButton(master=frame2,text="maximo").pack(pady=5)
+frame2.pack(padx=10, pady=10, side="left")
+
+masterFrame1.pack(fill="x", padx=10, pady=10)
 
 
-frame1 = tk.Frame(screenRoot).pack(pady=5)
-tk.Label(frame1, text="formula").pack()
-tk.Label(frame1, text="f(x)").pack()
-formula = tk.Entry(frame1)
-formula.pack()
-line = tk.Frame(screenRoot, height=2, bd=1, relief=tk.SUNKEN)
-line.pack(fill=tk.X, padx=10, pady=5)
+masterFrame2=customtkinter.CTkFrame(master=app, width=430, height=70)
 
-frame2 = tk.Frame(screenRoot).pack()
-tk.Label(frame2,text="Tamaño de la población").pack()
-tk.Label(frame2,text="Inicial").pack()
-i_poblation=tk.Entry(frame2)
-i_poblation.pack()
-tk.Label(frame2,text="Maxima").pack()
-max_poblation=tk.Entry(frame2)
-max_poblation.pack()
-line = tk.Frame(screenRoot, height=2, bd=1, relief=tk.SUNKEN)
-line.pack(fill=tk.X, padx=10, pady=5)
+frame3 = customtkinter.CTkFrame(master=masterFrame2, width=430, height=70,fg_color="transparent")
+customtkinter.CTkLabel(master=frame3, text="Población", width=430,).pack(fill="x", expand=True)
+frame3.pack(side="top", fill="x", expand=True)
 
-frame3 = tk.Frame(screenRoot).pack()
-tk.Label(frame3,text="Probabilidades de mutación").pack()
-tk.Label(frame2,text="Por individo").pack()
-ind_mut_prob=tk.Entry(frame2)
-ind_mut_prob.pack()
-tk.Label(frame2,text="Por gen").pack()
-ind_gen_mut_prob=tk.Entry(frame2)
-ind_gen_mut_prob.pack()
-line = tk.Frame(screenRoot, height=2, bd=1, relief=tk.SUNKEN)
-line.pack(fill=tk.X, padx=10, pady=5)
+frame4 = customtkinter.CTkFrame(master=masterFrame2, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame4, text="Inicial", width=100).pack(side="left")
+initial_pob_text = customtkinter.CTkEntry(master=frame4, width=100)
+initial_pob_text.pack()
+frame4.pack(padx=10, pady=5,side="left")
 
-frame4 = tk.Frame(screenRoot).pack()
-tk.Label(frame4,text="Rango de posibles soluciones").pack
-tk.Label(frame4,text="minimo").pack()
-min_range=tk.Entry(frame4)
-min_range.pack()
-tk.Label(frame4,text="maximo").pack()
-max_range=tk.Entry(frame4)
-max_range.pack()
-line = tk.Frame(screenRoot, height=2, bd=1, relief=tk.SUNKEN)
-line.pack(fill=tk.X, padx=10, pady=5)
+frame5 = customtkinter.CTkFrame(master=masterFrame2, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame5, text="Maxima", width=100).pack(side="left")
+max_pob_text = customtkinter.CTkEntry(master=frame5, width=100)
+max_pob_text.pack()
+frame5.pack(padx=10, pady=5,side="left")
 
-frame5 = tk.Frame(screenRoot).pack()
-tk.Label(frame5,text="Criterios de finalización")
-tk.Label(frame5,text="iteraciones").pack()
-iteraciones=tk.Entry(frame5)
-iteraciones.pack()
-tk.Label(frame5,text="% fitness").pack()
-fitness = tk.Entry(frame5)
-fitness.pack()
-
-# Botón de guardar
-boton_guardar = tk.Button(screenRoot, text="Guardar", command=guardar_datos)
-boton_guardar.pack()
-
-screenRoot.mainloop()
+masterFrame2.pack(fill="x", padx=10, pady=10)
 
 
+masterFrame3=customtkinter.CTkFrame(master=app, width=430, height=70)
+
+frame6 = customtkinter.CTkFrame(master=masterFrame3, width=430, height=70,fg_color="transparent")
+customtkinter.CTkLabel(master=frame6, text="Mutacion", width=430,).pack(fill="x", expand=True)
+frame6.pack(side="top", fill="x", expand=True)
+
+frame7 = customtkinter.CTkFrame(master=masterFrame3, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame7, text="% Individuo", width=100).pack(side="left")
+mut_ind_prob_text = customtkinter.CTkEntry(master=frame7, width=100)
+mut_ind_prob_text.pack()
+frame7.pack(padx=10, pady=5,side="left")
+
+frame8 = customtkinter.CTkFrame(master=masterFrame3, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame8, text="% Gen", width=100).pack(side="left")
+mut_gen_prob_text = customtkinter.CTkEntry(master=frame8, width=100)
+mut_gen_prob_text.pack()
+frame8.pack(padx=10, pady=5,side="left")
+
+masterFrame3.pack(fill="x", padx=10, pady=10)
+
+
+masterFrame4=customtkinter.CTkFrame(master=app, width=430, height=70)
+
+frame9 = customtkinter.CTkFrame(master=masterFrame4, width=430, height=70,fg_color="transparent")
+customtkinter.CTkLabel(master=frame9, text="Rango de soluciones", width=430,).pack(fill="x", expand=True)
+frame9.pack(side="top", fill="x", expand=True)
+
+frame10 = customtkinter.CTkFrame(master=masterFrame4, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame10, text="X Min.", width=100).pack(side="left")
+min_x_text = customtkinter.CTkEntry(master=frame10, width=100)
+min_x_text.pack()
+frame10.pack(padx=10, pady=5,side="left")
+
+frame11 = customtkinter.CTkFrame(master=masterFrame4, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame11, text="X Max.", width=100).pack(side="left")
+max_x_text = customtkinter.CTkEntry(master=frame11, width=100)
+max_x_text.pack()
+frame11.pack(padx=10, pady=5,side="left")
+
+masterFrame4.pack(fill="x", padx=10, pady=10)
+
+masterFrame5=customtkinter.CTkFrame(master=app, width=430, height=70)
+
+frame12 = customtkinter.CTkFrame(master=masterFrame5, width=430, height=70,fg_color="transparent")
+customtkinter.CTkLabel(master=frame12, text="Criterio de Finalización", width=430,).pack(fill="x", expand=True)
+frame12.pack(side="top", fill="x", expand=True)
+
+frame13 = customtkinter.CTkFrame(master=masterFrame5, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame13, text="Iteraciones", width=100).pack(side="left")
+max_iteration_text = customtkinter.CTkEntry(master=frame13, width=100)
+max_iteration_text.pack()
+frame13.pack(padx=10, pady=5,side="left")
+
+frame14 = customtkinter.CTkFrame(master=masterFrame5, width=200, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame14, text="% fitness", width=100).pack(side="left")
+fitness_por_text = customtkinter.CTkEntry(master=frame14, width=100)
+fitness_por_text.pack()
+frame14.pack(padx=10, pady=5,side="left")
+
+masterFrame5.pack(fill="x", padx=10, pady=10)
+
+
+button = customtkinter.CTkButton(master=app, text="Start Genetic Algorithm", command=start, width=200)
+button.place(relx=0.3, rely=0.9)
+app.mainloop()
