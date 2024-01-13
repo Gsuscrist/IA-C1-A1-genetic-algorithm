@@ -54,48 +54,72 @@ def evaluate_function(x):
         print(e)
 
 
-def get_binary_number(num):
+def get_binary_number(num, bits):
     if num == 0:
-        return "0" * 5
+        return "0" * bits
     bin_num = ""
 
     while num > 0:
         bin_num = str(num % 2) + bin_num
         num //= 2
 
-    if len(bin_num) < 5:
-        bin_num = "0" * (5 - len(bin_num)) + bin_num
+    if len(bin_num) < bits:
+        bin_num = "0" * (bits - len(bin_num)) + bin_num
 
     return bin_num
 
 
-def get_x_number(num):
-    # replace 5 with a number of bits for the
+def get_delta_x():
     min_x = int(min_x_text.get())
     max_x = int(max_x_text.get())
-    x = min_x + num * ((max_x - min_x) / (2 ** 5 - 1))
+    num = max_x - min_x
+    num = num if num >= 0 else -num
+    return num
+
+
+def get_num_jumps():
+    delta_x = get_delta_x()
+    return delta_x / float(fitness_por_text.get())
+
+
+def get_x_number(num, bits):
+    # replace 5 with a number of bits for the
+    min_x = float(min_x_text.get())
+    delta_x = get_delta_x()
+    if min_x <0 :
+        min_x=-min_x
+    x = min_x + num * (delta_x / (2 ** bits - 1))
     return round(x, 3)
 
 
-def generate_number():
-    return random.randint(1, 31)
+def generate_number(max_num):
+    delta_x = get_delta_x()
+    return random.randint(1, delta_x)
+
+
+def get_initial_pob():
+    initial_pob = []
+    id = 0
+    jumps = get_num_jumps()
+    bits = math.ceil(math.log2(jumps)) + 1
+    for element in range(int(initial_pob_text.get())):
+        id = id + 1
+        i = generate_number(jumps)
+        binary = get_binary_number(i, bits-1)
+        x = get_x_number(i, bits-1)
+        fx = evaluate_function(x)
+        initial_pob.append([id, binary, i, x, fx])
+    return initial_pob
 
 
 def start(data):
-    dataTable = []
+    pob = []
     #  id  |  binary | i    | x   | fx
     #  0   |   1     |  2   | 3  | 4
-    id = 0
-    for element in range(int(initial_pob_text.get())):
-        id = id + 1
-        i = generate_number()
-        binary = get_binary_number(i)
-        x = get_x_number(i)
-        fx = evaluate_function(x)
-        dataTable.append([id, binary, i, x, fx])
+    pob = get_initial_pob()
 
-    print(dataTable)
-
+    print(pob)
+    print(len(pob))
 
 masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
 
