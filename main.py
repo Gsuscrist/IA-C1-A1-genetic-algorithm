@@ -1,5 +1,9 @@
+import random
+
 import customtkinter
 from tkinter import messagebox
+import math
+import sympy
 
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
@@ -8,7 +12,7 @@ app = customtkinter.CTk()
 app.geometry("450x600")
 app.title("IA C1 A 1 Genetic Algorithms 01")
 app.resizable(False, True)
-opc=0
+opc = 0
 
 
 def set_opc(number):
@@ -39,9 +43,58 @@ def save_data():
     data[1:-1] = [float(x) for x in data[1:-1]]
     start(data)
 
-def start(data):
-    print(data)
 
+def evaluate_function(x):
+    try:
+        # replace x with value
+        result = eval(formula_text.get(), {'x': x})
+        return round(result, 2)
+    except Exception as e:
+        print("error")
+        print(e)
+
+
+def get_binary_number(num):
+    if num == 0:
+        return "0" * 5
+    bin_num = ""
+
+    while num > 0:
+        bin_num = str(num % 2) + bin_num
+        num //= 2
+
+    if len(bin_num) < 5:
+        bin_num = "0" * (5 - len(bin_num)) + bin_num
+
+    return bin_num
+
+
+def get_x_number(num):
+    # replace 5 with a number of bits for the
+    min_x = int(min_x_text.get())
+    max_x = int(max_x_text.get())
+    x = min_x + num * ((max_x - min_x) / (2 ** 5 - 1))
+    return round(x, 3)
+
+
+def generate_number():
+    return random.randint(1, 31)
+
+
+def start(data):
+    dataTable = []
+    #  id  |  binary | i    | x   | fx
+    #  0   |   1     |  2   | 3  | 4
+    id = 0
+    for element in range(int(initial_pob_text.get())):
+        id = id + 1
+        i = generate_number()
+        binary = get_binary_number(i)
+        x = get_x_number(i)
+        fx = evaluate_function(x)
+        dataTable.append([id, binary, i, x, fx])
+
+    print(dataTable)
 
 
 masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
