@@ -6,13 +6,14 @@ from tkinter import messagebox
 import math
 import sympy
 
+
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
 app = customtkinter.CTk()
-app.geometry("450x700")
+app.geometry("1000x700")
 app.title("IA C1 A 1 Genetic Algorithms 01")
-app.resizable(False, True)
+app.resizable(False, False)
 opc = 0
 
 
@@ -46,7 +47,7 @@ def save_data():
     start(data)
 
 
-def generate_chromosom(bits: int, size: int):
+def generate_chromosome(bits: int, size: int):
     list = []
     for i in range(size):
         num_aleatorio = random.randint(1, 2 ** bits - 1)
@@ -198,7 +199,7 @@ def start(data):
     #  0   |   1     |  2   | 3  | 4
     size = int(initial_pob_text.get())
     bits = get_number_bits()
-    chromosome = generate_chromosom(bits, size)
+    chromosome = generate_chromosome(bits, size)
     # initial generation
     gen = get_gen(chromosome, size, bits)
     prev_gen = []
@@ -261,47 +262,9 @@ def start(data):
     print(coord_w_x)
     print(coord_m_x)
 
+mFrame1 = customtkinter.CTkFrame(master=app, width=450, height=700)
 
-""""
-    gen0 = get_gen(genome, size, bits)
-    print(gen0)
-    # metodo de get best, worst, promedio
-    best_value = get_best_value(gen0, 3)
-    print("bv: ")
-    print(best_value)
-    worst_value = get_worst_value(gen0, 3)
-    print("wv: ")
-    print(worst_value)
-    print("m: ")
-    media = get_media_value(gen0, 3)
-    print(media)
-    # fin metodo
-    # comienza A3
-    divition = len(gen0) // 2 + len(gen0) % 2
-    gen0_divition1 = gen0[:divition]
-    gen0_divition2 = gen0[divition:]
-    print(gen0_divition1)
-    print(gen0_divition2)
-    # cruza
-    binary = [e[1] for e in gen0_divition1]
-    new_gen_bin = []
-    new_gen_bin = reproduce(binary, 2)
-    print("new GEN: ")
-    print(new_gen_bin)
-    # fin C3
-    # inicia M2
-    sons = []
-    sons = mutar_hijos(new_gen_bin)
-    print("new sons")
-    print(sons)
-    gen1 = get_gen(sons, size, bits)
-    print("gen1")
-    print(gen1)
-    # fin M2
-    # fin de A3
-"""
-
-masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame1 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame = customtkinter.CTkFrame(master=masterFrame1, width=430, height=20, fg_color="transparent")
 customtkinter.CTkLabel(master=frame, text="Formula", width=430, ).pack(fill="x", expand=True)
@@ -320,7 +283,7 @@ frame2.pack(padx=10, pady=10, side="left")
 
 masterFrame1.pack(fill="x", padx=10, pady=10)
 
-masterFrame1_1 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame1_1 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 frame1_1 = customtkinter.CTkFrame(master=masterFrame1_1, width=430, height=70, fg_color="transparent")
 customtkinter.CTkLabel(master=frame1_1, text="Resolucion", width=430).pack(fill="x", expand=True)
 frame1_1.pack(side="top", fill="x", expand=True)
@@ -333,7 +296,7 @@ frame1_2.pack(padx=10, pady=5, side="left")
 
 masterFrame1_1.pack(fill="x", padx=10, pady=10)
 
-masterFrame2 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame2 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame3 = customtkinter.CTkFrame(master=masterFrame2, width=430, height=70, fg_color="transparent")
 customtkinter.CTkLabel(master=frame3, text="Población", width=430, ).pack(fill="x", expand=True)
@@ -353,7 +316,7 @@ frame5.pack(padx=10, pady=5, side="left")
 
 masterFrame2.pack(fill="x", padx=10, pady=10)
 
-masterFrame3 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame3 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame6 = customtkinter.CTkFrame(master=masterFrame3, width=430, height=70, fg_color="transparent")
 customtkinter.CTkLabel(master=frame6, text="Mutacion", width=430, ).pack(fill="x", expand=True)
@@ -373,7 +336,7 @@ frame8.pack(padx=10, pady=5, side="left")
 
 masterFrame3.pack(fill="x", padx=10, pady=10)
 
-masterFrame4 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame4 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame9 = customtkinter.CTkFrame(master=masterFrame4, width=430, height=70, fg_color="transparent")
 customtkinter.CTkLabel(master=frame9, text="Rango de soluciones", width=430, ).pack(fill="x", expand=True)
@@ -393,26 +356,28 @@ frame11.pack(padx=10, pady=5, side="left")
 
 masterFrame4.pack(fill="x", padx=10, pady=10)
 
-masterFrame5 = customtkinter.CTkFrame(master=app, width=430, height=70)
+masterFrame5 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame12 = customtkinter.CTkFrame(master=masterFrame5, width=430, height=70, fg_color="transparent")
 customtkinter.CTkLabel(master=frame12, text="Criterio de Finalización", width=430, ).pack(fill="x", expand=True)
 frame12.pack(side="top", fill="x", expand=True)
 
-frame13 = customtkinter.CTkFrame(master=masterFrame5, width=200, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame13, text="Iteraciones", width=100).pack(side="left")
-max_iteration_text = customtkinter.CTkEntry(master=frame13, width=100)
+frame13 = customtkinter.CTkFrame(master=masterFrame5, width=430, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame13, text="Iteraciones", width=215).pack(side="left")
+max_iteration_text = customtkinter.CTkEntry(master=frame13, width=215)
 max_iteration_text.pack()
 frame13.pack(padx=10, pady=5, side="left")
 
-frame14 = customtkinter.CTkFrame(master=masterFrame5, width=200, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame14, text="% fitness", width=100).pack(side="left")
-fitness_por_text = customtkinter.CTkEntry(master=frame14, width=100)
-fitness_por_text.pack()
-frame14.pack(padx=10, pady=5, side="left")
-
 masterFrame5.pack(fill="x", padx=10, pady=10)
 
-button = customtkinter.CTkButton(master=app, text="Start Genetic Algorithm", command=save_data, width=200)
-button.place(relx=0.3, rely=0.9)
+button = customtkinter.CTkButton(master=mFrame1, text="Start Genetic Algorithm", command=save_data, width=200)
+button.pack(padx=10, pady=20)
+
+mFrame1.pack(side="left", fill="y")
+
+mFrame2 = customtkinter.CTkFrame(master=app, width=500)
+
+mFrame2.pack(side="left", padx=10,)
+# aca ira el grafico
+# si puedo tambien agregare un tab view para alternar entre grafica de x y grafica de y
 app.mainloop()
