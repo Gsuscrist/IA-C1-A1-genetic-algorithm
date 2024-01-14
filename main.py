@@ -46,7 +46,7 @@ def save_data():
     start(data)
 
 
-def generate_Genome(bits: int, size: int):
+def generate_chromosom(bits: int, size: int):
     list = []
     for i in range(size):
         num_aleatorio = random.randint(1, 2 ** bits - 1)
@@ -84,33 +84,32 @@ def get_fx(x):
         print(e)
 
 
-def get_first_gen(genome, size, bits):
-    gen0 = []
-    print(genome)
+def get_gen(genome, size, bits):
+    gen = []
     id = 0
     for e in genome:
         id = id + 1
         num = get_number_from(e)
         x = get_x(num, bits)
         fx = get_fx(num)
-        gen0.append([id, e, num, x, fx])
-    if (opc == 1):
+        gen.append([id, e, num, x, fx])
+    if opc == 1:
         # menor a mayor
-        gen0 = sorted(gen0, key=lambda x: x[-1])
-    elif (opc == 2):
+        gen0 = sorted(gen, key=lambda x: x[-1])
+    elif opc == 2:
         # mayor a menor
-        gen0 = sorted(gen0, key=lambda x: x[-1], reverse=True)
+        gen0 = sorted(gen, key=lambda x: x[-1], reverse=True)
     return gen0
 
 
-def get_best_value(gen, element):
-    values = [row[element] for row in gen]
-    return max(values)
+def get_best_value(gen, element, opc):
+    value = [row[element] for row in gen]
+    return min(value) if opc == 1 else max(value)
 
 
-def get_worst_value(gen, element):
-    values = [row[element] for row in gen]
-    return min(values)
+def get_worst_value(gen, element, opc):
+    value = [row[element] for row in gen]
+    return max(value) if opc ==1 else min(value)
 
 
 def get_media_value(gen, element):
@@ -130,41 +129,141 @@ def get_son(f1, f2, punto_cruza):
     return s1, s2
 
 
-def get_new_binary(fathers, punto_cruza):
+def reproduce(fathers, punto_cruza):
     sons = []
-    for i in range(len(fathers)):
-        for j in range(i + 1, len(fathers)):
-            s1, s2 = get_son(fathers[i], fathers[j], punto_cruza)
+    if len(fathers) == 2:
+        s1, s2 = get_son(fathers[0], fathers[0], punto_cruza)
+        sons.append(s1)
+        sons.append(s2)
+    elif len(fathers) == 1:
+        s1 = fathers[0]
+        sons.append(s1)
+        sons.append(s1)
+    else:
+        if len(fathers) % 2 == 1:
+            s1, s2 = get_son(fathers[-1], fathers[-2], punto_cruza)
             sons.append(s1)
             sons.append(s2)
+        else:
+            for i in range(len(fathers)):
+                for j in range(i + 1, len(fathers)):
+                    s1, s2 = get_son(fathers[i], fathers[j], punto_cruza)
+                    sons.append(s1)
+                    sons.append(s2)
 
     return sons
 
+
 def mutar_hijo(hijo):
-    mut_ind_prob= float(mut_ind_prob_text.get())
-    hijo_list=list(hijo)
+    mut_ind_prob = float(mut_ind_prob_text.get())
+    hijo_list = list(hijo)
     if probability_function(mut_ind_prob):
         for i in range(len(hijo_list)):
-            mut_gen_prob=float(mut_gen_prob_text.get())
+            mut_gen_prob = float(mut_gen_prob_text.get())
             if probability_function(mut_gen_prob):
-                new_position=random.randint(0,len(hijo_list)-1)
-                hijo_list[i],hijo_list[new_position]=hijo_list[new_position],hijo_list[i]
+                new_position = random.randint(0, len(hijo_list) - 1)
+                hijo_list[i], hijo_list[new_position] = hijo_list[new_position], hijo_list[i]
     return ''.join(hijo_list)
 
+
 def mutar_hijos(hijos):
-    hijos_mutados=[]
+    hijos_mutados = []
     for hijo in hijos:
-        hijo_mutado= mutar_hijo(hijo)
+        hijo_mutado = mutar_hijo(hijo)
         hijos_mutados.append(hijo_mutado)
     return hijos_mutados
+
+
+def get_divition(gen):
+    divition = len(gen) // 2 + len(gen) % 2
+    div1 = gen[:divition]
+    div2 = gen[divition:]
+    return div1
+
+
+def poda(gen):
+    if opc == 1:
+        # menor a mayor
+        best_results = sorted(gen, key=lambda x: x[-1])[:int(initial_pob_text.get())]
+    elif opc == 2:
+        # mayor a menor
+        best_results = sorted(gen, key=lambda x: x[-1], reverse=True)[:int(initial_pob_text.get())]
+    while len(best_results) < int(max_pob_text.get()):
+        best_results.append(gen[random.randint(0, len(gen) - 1)])
+    return best_results
+
 
 def start(data):
     #  id  |  binary | i    | x   | fx
     #  0   |   1     |  2   | 3  | 4
     size = int(initial_pob_text.get())
     bits = get_number_bits()
-    genome = generate_Genome(bits, size)
-    gen0 = get_first_gen(genome, size, bits)
+    chromosome = generate_chromosom(bits, size)
+    # initial generation
+    gen = get_gen(chromosome, size, bits)
+    prev_gen = []
+    prev_gen = gen
+    coord_b_fx=[]
+    coord_w_fx = []
+    coord_m_fx = []
+    coord_b_x = []
+    coord_w_x = []
+    coord_m_x = []
+    for i in range(int(max_iteration_text.get())):
+        print("Iteration: ", i)
+        print("Generation: ", gen)
+
+        # aca falta get B W M de gen
+        b_fx=get_best_value(gen, 4, opc)
+        coord_b_fx.append([i,b_fx])
+        w_fx=get_worst_value(gen, 4, opc)
+        coord_w_fx.append([i, w_fx])
+        m_fx=get_media_value(gen, 4)
+        coord_m_fx.append([i, m_fx])
+
+        b_x = get_best_value(gen, 3, opc)
+        coord_b_x.append([i, b_x])
+        w_x = get_worst_value(gen, 3, opc)
+        coord_w_x.append([i, w_x])
+        m_x = get_media_value(gen, 3)
+        coord_m_x.append([i, m_x])
+
+        if len(gen) > int(max_pob_text.get()):
+            print("borar excedentes")
+            gen = poda(gen)
+            print("nueva gen tras borrar: ", gen)
+            # funcion clean gen
+        # A3
+        gen_usable_part = get_divition(gen)
+        # C3
+        chromosomes = [e[1] for e in gen_usable_part]
+        chromosomes = reproduce(chromosomes, bits - 2)
+        # M2
+        chromosomes = mutar_hijos(chromosomes)
+        new_gen = get_gen(chromosomes, size, bits)
+        gen = prev_gen + new_gen
+        if opc == 1:
+            # menor a mayor
+            gen = sorted(gen, key=lambda x: x[-1])
+        elif opc == 2:
+            # mayor a menor
+            gen = sorted(gen, key=lambda x: x[-1], reverse=True)
+        prev_gen = new_gen
+
+    print("coords")
+    print("fx")
+    print(coord_b_fx)
+    print(coord_w_fx)
+    print(coord_m_fx)
+
+    print("x")
+    print(coord_b_x)
+    print(coord_w_x)
+    print(coord_m_x)
+
+
+""""
+    gen0 = get_gen(genome, size, bits)
     print(gen0)
     # metodo de get best, worst, promedio
     best_value = get_best_value(gen0, 3)
@@ -186,18 +285,21 @@ def start(data):
     # cruza
     binary = [e[1] for e in gen0_divition1]
     new_gen_bin = []
-    new_gen_bin = get_new_binary(binary, 2)
+    new_gen_bin = reproduce(binary, 2)
     print("new GEN: ")
     print(new_gen_bin)
-    #fin C3
-    #inicia M2
-    sons =[]
+    # fin C3
+    # inicia M2
+    sons = []
     sons = mutar_hijos(new_gen_bin)
     print("new sons")
     print(sons)
-    #fin M2
+    gen1 = get_gen(sons, size, bits)
+    print("gen1")
+    print(gen1)
+    # fin M2
     # fin de A3
-
+"""
 
 masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
 
