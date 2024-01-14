@@ -1,17 +1,20 @@
 import random
+import tkinter
 from typing import List, Type
 
 import customtkinter
 from tkinter import messagebox
 import math
 import sympy
-
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
 
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
 app = customtkinter.CTk()
-app.geometry("1000x700")
+app.geometry("1000x800")
 app.title("IA C1 A 1 Genetic Algorithms 01")
 app.resizable(False, False)
 opc = 0
@@ -24,6 +27,7 @@ def set_opc(number):
 
 def save_data():
     print("saving data...")
+
     data = [
         formula_text.get(),
         initial_pob_text.get(),
@@ -34,7 +38,6 @@ def save_data():
         min_x_text.get(),
         max_x_text.get(),
         max_iteration_text.get(),
-        fitness_por_text.get(),
         opc
     ]
 
@@ -110,7 +113,7 @@ def get_best_value(gen, element, opc):
 
 def get_worst_value(gen, element, opc):
     value = [row[element] for row in gen]
-    return max(value) if opc ==1 else min(value)
+    return max(value) if opc == 1 else min(value)
 
 
 def get_media_value(gen, element):
@@ -204,7 +207,7 @@ def start(data):
     gen = get_gen(chromosome, size, bits)
     prev_gen = []
     prev_gen = gen
-    coord_b_fx=[]
+    coord_b_fx = []
     coord_w_fx = []
     coord_m_fx = []
     coord_b_x = []
@@ -215,12 +218,12 @@ def start(data):
         print("Generation: ", gen)
 
         # aca falta get B W M de gen
-        b_fx=get_best_value(gen, 4, opc)
-        coord_b_fx.append([i,b_fx])
-        w_fx=get_worst_value(gen, 4, opc)
-        coord_w_fx.append([i, w_fx])
-        m_fx=get_media_value(gen, 4)
-        coord_m_fx.append([i, m_fx])
+        b_fx = get_best_value(gen, 4, opc)
+        coord_b_fx.append([i, float(b_fx)])
+        w_fx = get_worst_value(gen, 4, opc)
+        coord_w_fx.append([i, float(w_fx)])
+        m_fx = get_media_value(gen, 4)
+        coord_m_fx.append([i, float(m_fx)])
 
         b_x = get_best_value(gen, 3, opc)
         coord_b_x.append([i, b_x])
@@ -250,17 +253,18 @@ def start(data):
             # mayor a menor
             gen = sorted(gen, key=lambda x: x[-1], reverse=True)
         prev_gen = new_gen
+    ax.plot(*zip(*coord_b_fx), label="Best fx", color="blue")
+    ax.plot(*zip(*coord_w_fx), label="Worst fx", color="red")
+    ax.plot(*zip(*coord_m_fx), label="Media fx", color="green")
+    ax.legend()
+    canvas.draw()
 
-    print("coords")
-    print("fx")
-    print(coord_b_fx)
-    print(coord_w_fx)
-    print(coord_m_fx)
+    ax2.plot(*zip(*coord_b_x), label="Best x", color="blue")
+    ax2.plot(*zip(*coord_w_x), label="Worst x", color="red")
+    ax2.plot(*zip(*coord_m_x), label="Media x", color="green")
+    ax2.legend()
+    canvas2.draw()
 
-    print("x")
-    print(coord_b_x)
-    print(coord_w_x)
-    print(coord_m_x)
 
 mFrame1 = customtkinter.CTkFrame(master=app, width=450, height=700)
 
@@ -375,9 +379,23 @@ button.pack(padx=10, pady=20)
 
 mFrame1.pack(side="left", fill="y")
 
-mFrame2 = customtkinter.CTkFrame(master=app, width=500)
+mFrame2 = customtkinter.CTkFrame(master=app, width=550, height=700, fg_color="transparent")
+new_frame = customtkinter.CTkFrame(master=mFrame2, width=550, height=100)
+fig, ax = plt.subplots()  # Create the figure and axes
+canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig, master=new_frame)
+canvas.get_tk_widget().pack()
+ax.set_xlabel("Generation")
+ax.set_ylabel("Value")
+canvas.draw()
+new_frame.pack(pady=10, expand=False)
 
-mFrame2.pack(side="left", padx=10,)
-# aca ira el grafico
-# si puedo tambien agregare un tab view para alternar entre grafica de x y grafica de y
+new_frame2 = customtkinter.CTkFrame(master=mFrame2, width=550, height=100)
+fig2, ax2 = plt.subplots()  # Create the figure and axes
+canvas2 = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig2, master=new_frame2)
+canvas2.get_tk_widget().pack()
+ax2.set_xlabel("Generation")
+ax2.set_ylabel("Value")
+canvas2.draw()
+new_frame2.pack(pady=10)
+mFrame2.pack(padx=10, expand=False)
 app.mainloop()
