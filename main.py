@@ -1,4 +1,5 @@
 import random
+from typing import List, Type
 
 import customtkinter
 from tkinter import messagebox
@@ -9,7 +10,7 @@ customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
 app = customtkinter.CTk()
-app.geometry("450x600")
+app.geometry("450x700")
 app.title("IA C1 A 1 Genetic Algorithms 01")
 app.resizable(False, True)
 opc = 0
@@ -25,6 +26,7 @@ def save_data():
     data = [
         formula_text.get(),
         initial_pob_text.get(),
+        resolution_text.get(),
         max_pob_text.get(),
         mut_ind_prob_text.get(),
         mut_gen_prob_text.get(),
@@ -44,9 +46,37 @@ def save_data():
     start(data)
 
 
-def evaluate_function(x):
+def generate_Genome(bits: int, size: int):
+    list = []
+    for i in range(size):
+        num_aleatorio = random.randint(1, 2 ** bits - 1)
+        representacion_binaria = bin(num_aleatorio)[2:].zfill(bits)
+        list.append(representacion_binaria)
+    return list
+
+
+def get_number_bits():
+    min_x = float(min_x_text.get())
+    max_x = float(max_x_text.get())
+    range = max_x - min_x
+    jump_num = range / float(resolution_text.get())
+    point_num = jump_num + 1
+    return int(math.log2(point_num))
+
+
+def get_number_from(binary: str):
+    return int(binary, 2)
+
+
+def get_x(num, bits):
+    min_x = float(min_x_text.get())
+    max_x = float(max_x_text.get())
+    range = max_x - min_x
+    return round(min_x + num * (range) / (2 ** bits - 1), 2)
+
+
+def get_fx(x):
     try:
-        # replace x with value
         result = eval(formula_text.get(), {'x': x})
         return round(result, 2)
     except Exception as e:
@@ -54,72 +84,120 @@ def evaluate_function(x):
         print(e)
 
 
-def get_binary_number(num, bits):
-    if num == 0:
-        return "0" * bits
-    bin_num = ""
-
-    while num > 0:
-        bin_num = str(num % 2) + bin_num
-        num //= 2
-
-    if len(bin_num) < bits:
-        bin_num = "0" * (bits - len(bin_num)) + bin_num
-
-    return bin_num
-
-
-def get_delta_x():
-    min_x = int(min_x_text.get())
-    max_x = int(max_x_text.get())
-    num = max_x - min_x
-    num = num if num >= 0 else -num
-    return num
-
-
-def get_num_jumps():
-    delta_x = get_delta_x()
-    return delta_x / float(fitness_por_text.get())
-
-
-def get_x_number(num, bits):
-    # replace 5 with a number of bits for the
-    min_x = float(min_x_text.get())
-    delta_x = get_delta_x()
-    if min_x <0 :
-        min_x=-min_x
-    x = min_x + num * (delta_x / (2 ** bits - 1))
-    return round(x, 3)
-
-
-def generate_number(max_num):
-    delta_x = get_delta_x()
-    return random.randint(1, delta_x)
-
-
-def get_initial_pob():
-    initial_pob = []
+def get_first_gen(genome, size, bits):
+    gen0 = []
+    print(genome)
     id = 0
-    jumps = get_num_jumps()
-    bits = math.ceil(math.log2(jumps)) + 1
-    for element in range(int(initial_pob_text.get())):
+    for e in genome:
         id = id + 1
-        i = generate_number(jumps)
-        binary = get_binary_number(i, bits-1)
-        x = get_x_number(i, bits-1)
-        fx = evaluate_function(x)
-        initial_pob.append([id, binary, i, x, fx])
-    return initial_pob
+        num = get_number_from(e)
+        x = get_x(num, bits)
+        fx = get_fx(num)
+        gen0.append([id, e, num, x, fx])
+    if (opc == 1):
+        # menor a mayor
+        gen0 = sorted(gen0, key=lambda x: x[-1])
+    elif (opc == 2):
+        # mayor a menor
+        gen0 = sorted(gen0, key=lambda x: x[-1], reverse=True)
+    return gen0
 
+
+def get_best_value(gen, element):
+    values = [row[element] for row in gen]
+    return max(values)
+
+
+def get_worst_value(gen, element):
+    values = [row[element] for row in gen]
+    return min(values)
+
+
+def get_media_value(gen, element):
+    values = [row[element] for row in gen]
+    media = sum(values) / len(values) if len(values) > 0 else None
+    return round(media, 2)
+
+
+def probability_function(prob):
+    number = round(random.random(), 2)
+    return number <= prob
+
+
+def get_son(f1, f2, punto_cruza):
+    s1 = f1[:punto_cruza] + f2[punto_cruza:]
+    s2 = f2[:punto_cruza] + f1[punto_cruza:]
+    return s1, s2
+
+
+def get_new_binary(fathers, punto_cruza):
+    sons = []
+    for i in range(len(fathers)):
+        for j in range(i + 1, len(fathers)):
+            s1, s2 = get_son(fathers[i], fathers[j], punto_cruza)
+            sons.append(s1)
+            sons.append(s2)
+
+    return sons
+
+def mutar_hijo(hijo):
+    mut_ind_prob= float(mut_ind_prob_text.get())
+    hijo_list=list(hijo)
+    if probability_function(mut_ind_prob):
+        for i in range(len(hijo_list)):
+            mut_gen_prob=float(mut_gen_prob_text.get())
+            if probability_function(mut_gen_prob):
+                new_position=random.randint(0,len(hijo_list)-1)
+                hijo_list[i],hijo_list[new_position]=hijo_list[new_position],hijo_list[i]
+    return ''.join(hijo_list)
+
+def mutar_hijos(hijos):
+    hijos_mutados=[]
+    for hijo in hijos:
+        hijo_mutado= mutar_hijo(hijo)
+        hijos_mutados.append(hijo_mutado)
+    return hijos_mutados
 
 def start(data):
-    pob = []
     #  id  |  binary | i    | x   | fx
     #  0   |   1     |  2   | 3  | 4
-    pob = get_initial_pob()
+    size = int(initial_pob_text.get())
+    bits = get_number_bits()
+    genome = generate_Genome(bits, size)
+    gen0 = get_first_gen(genome, size, bits)
+    print(gen0)
+    # metodo de get best, worst, promedio
+    best_value = get_best_value(gen0, 3)
+    print("bv: ")
+    print(best_value)
+    worst_value = get_worst_value(gen0, 3)
+    print("wv: ")
+    print(worst_value)
+    print("m: ")
+    media = get_media_value(gen0, 3)
+    print(media)
+    # fin metodo
+    # comienza A3
+    divition = len(gen0) // 2 + len(gen0) % 2
+    gen0_divition1 = gen0[:divition]
+    gen0_divition2 = gen0[divition:]
+    print(gen0_divition1)
+    print(gen0_divition2)
+    # cruza
+    binary = [e[1] for e in gen0_divition1]
+    new_gen_bin = []
+    new_gen_bin = get_new_binary(binary, 2)
+    print("new GEN: ")
+    print(new_gen_bin)
+    #fin C3
+    #inicia M2
+    sons =[]
+    sons = mutar_hijos(new_gen_bin)
+    print("new sons")
+    print(sons)
+    #fin M2
+    # fin de A3
 
-    print(pob)
-    print(len(pob))
 
 masterFrame1 = customtkinter.CTkFrame(master=app, width=430, height=70)
 
@@ -139,6 +217,19 @@ maxBttn = customtkinter.CTkButton(master=frame2, text="maximo", command=lambda: 
 frame2.pack(padx=10, pady=10, side="left")
 
 masterFrame1.pack(fill="x", padx=10, pady=10)
+
+masterFrame1_1 = customtkinter.CTkFrame(master=app, width=430, height=70)
+frame1_1 = customtkinter.CTkFrame(master=masterFrame1_1, width=430, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame1_1, text="Resolucion", width=430).pack(fill="x", expand=True)
+frame1_1.pack(side="top", fill="x", expand=True)
+
+frame1_2 = customtkinter.CTkFrame(master=masterFrame1_1, width=430, height=70, fg_color="transparent")
+customtkinter.CTkLabel(master=frame1_2, text="Resolucion", width=215).pack(side="left")
+resolution_text = customtkinter.CTkEntry(master=frame1_2, width=215)
+resolution_text.pack()
+frame1_2.pack(padx=10, pady=5, side="left")
+
+masterFrame1_1.pack(fill="x", padx=10, pady=10)
 
 masterFrame2 = customtkinter.CTkFrame(master=app, width=430, height=70)
 
