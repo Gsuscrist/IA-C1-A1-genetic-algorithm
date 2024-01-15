@@ -81,6 +81,7 @@ def get_x(num, bits):
 
 def get_fx(x):
     try:
+
         result = eval(formula_text.get(), {'x': x})
         return round(result, 2)
     except Exception as e:
@@ -186,14 +187,14 @@ def get_divition(gen):
 
 
 def poda(gen):
+    best_results=[]
     if opc == 1:
         # menor a mayor
         best_results = sorted(gen, key=lambda x: x[-1])[:int(initial_pob_text.get())]
     elif opc == 2:
         # mayor a menor
         best_results = sorted(gen, key=lambda x: x[-1], reverse=True)[:int(initial_pob_text.get())]
-    while len(best_results) < int(max_pob_text.get()):
-        best_results.append(gen[random.randint(0, len(gen) - 1)])
+
     return best_results
 
 
@@ -232,7 +233,7 @@ def start(data):
         m_x = get_media_value(gen, 3)
         coord_m_x.append([i, m_x])
 
-        if len(gen) > int(max_pob_text.get()):
+        if i !=0:
             print("borar excedentes")
             gen = poda(gen)
             print("nueva gen tras borrar: ", gen)
@@ -253,6 +254,21 @@ def start(data):
             # mayor a menor
             gen = sorted(gen, key=lambda x: x[-1], reverse=True)
         prev_gen = new_gen
+    #enviar cuadro de texto de mejor generacion
+    best_e1=None
+    best_e2=None
+    for e in coord_b_fx:
+        if best_e1 is None or (opc and e[1]>best_e1[1]) or \
+                (not opc and e[1]<best_e1[1]):
+            best_e1=e
+    for e in coord_b_x:
+        if best_e2 is None or (opc and e[1]>best_e2[1]) or \
+                (not opc and e[1]<best_e2[1]):
+            best_e2=e
+    msg = f'la mejor generacion para f(x) fue {best_e1[0]} \n f(x) = {best_e1[1]} \n la mejor generacion para x fue {best_e2[0]} \n x = {best_e2[1]} '
+    messagebox.showinfo("Information", msg)
+    #fin de mensaje
+
     ax.plot(*zip(*coord_b_fx), label="Best fx", color="blue")
     ax.plot(*zip(*coord_w_fx), label="Worst fx", color="red")
     ax.plot(*zip(*coord_m_fx), label="Media fx", color="green")
