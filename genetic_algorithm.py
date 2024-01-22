@@ -280,13 +280,22 @@ def generate_generation_graphic(gen_data):
         plt.cla()
         x, y = get_coords(gen_data[i])
         plt.scatter(x, y, c="black")
-        plt.scatter(coords[0], coords[1] + 1, c="green", label="best", zorder=1)
-        plt.scatter(coords2[0], coords2[1] + 1, c="red", label="worst", zorder=1)
+        plt.scatter(coords[0], coords[1], c="green", label="best", zorder=1)
+        plt.scatter(coords2[0], coords2[1], c="red", label="worst", zorder=1)
+
+         # Agrega la función evaluada a la gráfica
+        x_symbol = symbols('x')
+        func = lambdify(x_symbol, formula_text.get(), 'numpy')
+        x_vals = np.linspace(float(min_x_text.get()), float(max_x_text.get()), 100000)
+        y_vals = func(x_vals)
+        plt.plot(x_vals, y_vals, label='Function', linestyle='--', color='blue')
 
         plt.title(f"Generation {i + 1}")
+        plt.legend()
         plt.xlabel("x")
         plt.ylabel("f(x)")
         plt.savefig(f"./images/generation{i + 1}.png")
+
 
 
 def generate_evolution_video():
@@ -352,7 +361,7 @@ mFrame1 = customtkinter.CTkFrame(master=app, width=450, height=700)
 masterFrame1 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame = customtkinter.CTkFrame(master=masterFrame1, width=430, height=20, fg_color="transparent")
-customtkinter.CTkLabel(master=frame, text="Formula", width=430, ).pack(fill="x", expand=True)
+customtkinter.CTkLabel(master=frame, text="Fórmula", width=430, ).pack(fill="x", expand=True)
 frame.pack(side="top", fill="x", expand=True)
 
 frame1 = customtkinter.CTkFrame(master=masterFrame1, width=300, height=70, fg_color="transparent")
@@ -362,19 +371,19 @@ formula_text.pack()
 frame1.pack(padx=10, pady=5, side="left")
 
 frame2 = customtkinter.CTkFrame(master=masterFrame1, width=130, height=70, fg_color="transparent")
-minBttn = customtkinter.CTkButton(master=frame2, text="minimo", command=lambda: set_opc(1)).pack(pady=5)
-maxBttn = customtkinter.CTkButton(master=frame2, text="maximo", command=lambda: set_opc(2)).pack(pady=5)
+minBttn = customtkinter.CTkButton(master=frame2, text="mínimo", command=lambda: set_opc(1)).pack(pady=5)
+maxBttn = customtkinter.CTkButton(master=frame2, text="máximo", command=lambda: set_opc(2)).pack(pady=5)
 frame2.pack(padx=10, pady=10, side="left")
 
 masterFrame1.pack(fill="x", padx=10, pady=10)
 
 masterFrame1_1 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 frame1_1 = customtkinter.CTkFrame(master=masterFrame1_1, width=430, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame1_1, text="Resolucion", width=430).pack(fill="x", expand=True)
+customtkinter.CTkLabel(master=frame1_1, text="Resolución", width=430).pack(fill="x", expand=True)
 frame1_1.pack(side="top", fill="x", expand=True)
 
 frame1_2 = customtkinter.CTkFrame(master=masterFrame1_1, width=430, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame1_2, text="Resolucion", width=215).pack(side="left")
+customtkinter.CTkLabel(master=frame1_2, text="Resolución", width=215).pack(side="left")
 resolution_text = customtkinter.CTkEntry(master=frame1_2, width=215)
 resolution_text.pack()
 frame1_2.pack(padx=10, pady=5, side="left")
@@ -394,7 +403,7 @@ initial_pob_text.pack()
 frame4.pack(padx=10, pady=5, side="left")
 
 frame5 = customtkinter.CTkFrame(master=masterFrame2, width=200, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame5, text="Maxima", width=100).pack(side="left")
+customtkinter.CTkLabel(master=frame5, text="Máxima", width=100).pack(side="left")
 max_pob_text = customtkinter.CTkEntry(master=frame5, width=100)
 max_pob_text.pack()
 frame5.pack(padx=10, pady=5, side="left")
@@ -404,7 +413,7 @@ masterFrame2.pack(fill="x", padx=10, pady=10)
 masterFrame3 = customtkinter.CTkFrame(master=mFrame1, width=430, height=70, fg_color="transparent")
 
 frame6 = customtkinter.CTkFrame(master=masterFrame3, width=430, height=70, fg_color="transparent")
-customtkinter.CTkLabel(master=frame6, text="Mutacion", width=430, ).pack(fill="x", expand=True)
+customtkinter.CTkLabel(master=frame6, text="Mutación", width=430, ).pack(fill="x", expand=True)
 frame6.pack(side="top", fill="x", expand=True)
 
 frame7 = customtkinter.CTkFrame(master=masterFrame3, width=200, height=70, fg_color="transparent")
@@ -457,8 +466,8 @@ masterFrame5.pack(fill="x", padx=10, pady=10)
 
 button = customtkinter.CTkButton(master=mFrame1, text="Start Genetic Algorithm", command=start, width=200)
 button.pack(padx=10, pady=20)
-button = customtkinter.CTkButton(master=mFrame1, text="Clean Genetic Algorithm", command=clean, width=200)
-button.pack(padx=10, pady=20)
+# button = customtkinter.CTkButton(master=mFrame1, text="Clean Genetic Algorithm", command=clean, width=200)
+# button.pack(padx=10, pady=20)
 
 mFrame1.pack(side="left", fill="y")
 
